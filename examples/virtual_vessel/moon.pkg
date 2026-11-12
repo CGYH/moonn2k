@@ -1,0 +1,6 @@
+import {
+  "CGYH/moonn2k/src/pgn",
+  "CGYH/moonn2k/src/simulator",
+}
+
+pkgtype(kind: "executable")

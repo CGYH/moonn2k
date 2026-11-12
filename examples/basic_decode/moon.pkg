@@ -1,0 +1,5 @@
+import {
+  "CGYH/moonn2k/src/identifier",
+}
+
+pkgtype(kind: "executable")

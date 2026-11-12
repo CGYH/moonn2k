@@ -51,6 +51,8 @@ pub(all) suberror ProtocolError {
   PayloadTooLarge(length~ : Int32, limit~ : Int32)
   /// Only raised in explicit strict-known mode; never by the default router.
   UnknownPgn(pgn~ : Int32)
+  /// A bit-level read/write runs past the end of the buffer.
+  BitsOutOfBounds(offset~ : Int32, bits~ : Int32, available~ : Int32)
 }
 
 ///|

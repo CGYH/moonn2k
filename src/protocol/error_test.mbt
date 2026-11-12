@@ -29,8 +29,9 @@ test "protocol error variants carry context" {
     SessionLimitExceeded(limit=8),
     PayloadTooLarge(length=224, limit=223),
     UnknownPgn(pgn=65280),
+    BitsOutOfBounds(offset=0, bits=9, available=8),
   ]
-  assert_eq(errors.length(), 12)
+  assert_eq(errors.length(), 13)
 }
 
 ///|

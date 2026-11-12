@@ -1,0 +1,7 @@
+import {
+  "CGYH/moonn2k/src/protocol",
+  "CGYH/moonn2k/src/identifier",
+  "CGYH/moonn2k/src/frame",
+  "CGYH/moonn2k/src/message",
+  "moonbitlang/core/debug",
+}

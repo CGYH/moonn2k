@@ -1,0 +1,92 @@
+{
+  "schema": "moonn2k-fast-packet-vectors/1",
+  "vectors": [
+    {
+      "id": "FPS-vector-9B",
+      "source": "manual-derivation per plan section 3.3 layout; cross-checked against canboatjs FastPacket segmentation behaviour (pinned release v9.3.0)",
+      "description": "9-byte payload, sequence id 3",
+      "payload_hex": "030b11191f272d353b",
+      "declared_length": 9,
+      "sequence_id": 3,
+      "frame_count": 2,
+      "frames_data_hex": [
+        "6009030b11191f27",
+        "612d353bffffffff"
+      ],
+      "notes": "final frame padded to 8 bytes with 0xFF (engineering choice, not a standard mandate); receivers derive valid bytes from declared_length"
+    },
+    {
+      "id": "FPS-vector-13B",
+      "source": "manual-derivation per plan section 3.3 layout; cross-checked against canboatjs FastPacket segmentation behaviour (pinned release v9.3.0)",
+      "description": "13-byte payload, sequence id 0",
+      "payload_hex": "030b11191f272d353b43495157",
+      "declared_length": 13,
+      "sequence_id": 0,
+      "frame_count": 2,
+      "frames_data_hex": [
+        "000d030b11191f27",
+        "012d353b43495157"
+      ],
+      "notes": "final frame padded to 8 bytes with 0xFF (engineering choice, not a standard mandate); receivers derive valid bytes from declared_length"
+    },
+    {
+      "id": "FPS-vector-14B",
+      "source": "manual-derivation per plan section 3.3 layout; cross-checked against canboatjs FastPacket segmentation behaviour (pinned release v9.3.0)",
+      "description": "14-byte payload, sequence id 5",
+      "payload_hex": "030b11191f272d353b434951575f",
+      "declared_length": 14,
+      "sequence_id": 5,
+      "frame_count": 3,
+      "frames_data_hex": [
+        "a00e030b11191f27",
+        "a12d353b43495157",
+        "a25fffffffffffff"
+      ],
+      "notes": "final frame padded to 8 bytes with 0xFF (engineering choice, not a standard mandate); receivers derive valid bytes from declared_length"
+    },
+    {
+      "id": "FPS-vector-223B",
+      "source": "manual-derivation per plan section 3.3 layout; cross-checked against canboatjs FastPacket segmentation behaviour (pinned release v9.3.0)",
+      "description": "223-byte payload, sequence id 7",
+      "payload_hex": "030b11191f272d353b434951575f656d737b81898f979da5abb3b9c1c7cfd5dde3ebf1f9ff070d151b232931373f454d535b61696f777d858b9399a1a7afb5bdc3cbd1d9dfe7edf5fb030911171f252d333b41494f575d656b737981878f959da3abb1b9bfc7cdd5dbe3e9f1f7ff050d131b21292f373d454b535961676f757d838b91999fa7adb5bbc3c9d1d7dfe5edf3fb01090f171d252b333941474f555d636b71797f878d959ba3a9b1b7bfc5cdd3dbe1e9eff7fd050b131921272f353d434b51595f676d757b838991979fa5adb3bbc1c9cfd7dde5ebf3f901070f15",
+      "declared_length": 223,
+      "sequence_id": 7,
+      "frame_count": 32,
+      "frames_data_hex": [
+        "e0df030b11191f27",
+        "e12d353b43495157",
+        "e25f656d737b8189",
+        "e38f979da5abb3b9",
+        "e4c1c7cfd5dde3eb",
+        "e5f1f9ff070d151b",
+        "e6232931373f454d",
+        "e7535b61696f777d",
+        "e8858b9399a1a7af",
+        "e9b5bdc3cbd1d9df",
+        "eae7edf5fb030911",
+        "eb171f252d333b41",
+        "ec494f575d656b73",
+        "ed7981878f959da3",
+        "eeabb1b9bfc7cdd5",
+        "efdbe3e9f1f7ff05",
+        "f00d131b21292f37",
+        "f13d454b53596167",
+        "f26f757d838b9199",
+        "f39fa7adb5bbc3c9",
+        "f4d1d7dfe5edf3fb",
+        "f501090f171d252b",
+        "f6333941474f555d",
+        "f7636b71797f878d",
+        "f8959ba3a9b1b7bf",
+        "f9c5cdd3dbe1e9ef",
+        "faf7fd050b131921",
+        "fb272f353d434b51",
+        "fc595f676d757b83",
+        "fd8991979fa5adb3",
+        "febbc1c9cfd7dde5",
+        "ffebf3f901070f15"
+      ],
+      "notes": "final frame padded to 8 bytes with 0xFF (engineering choice, not a standard mandate); receivers derive valid bytes from declared_length"
+    }
+  ]
+}

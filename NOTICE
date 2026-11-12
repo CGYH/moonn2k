@@ -1,0 +1,19 @@
+moonn2k
+Copyright 2026 CGYH and moonn2k contributors
+
+This product includes software developed as part of the moonn2k project
+(https://github.com/CGYH/moonn2k), licensed under the Apache License, Version 2.0.
+
+Protocol field definitions and reference vectors are derived from the
+open-source canboat project (https://github.com/canboat/canboat),
+licensed under the Apache License, Version 2.0. See THIRD_PARTY.md for
+pinned versions and usage notes.
+
+NMEA 2000 is a proprietary standard of the National Marine Electronics
+Association. This project is an independent implementation based on
+public information; it is neither endorsed by nor affiliated with NMEA.
+
+======================================================================
+Apache License, Version 2.0 notice follows (short form). The full text
+is provided in the LICENSE file shipped with this distribution.
+======================================================================

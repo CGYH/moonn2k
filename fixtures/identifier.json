@@ -1,0 +1,100 @@
+{
+  "schema": "moonn2k-identifier-vectors/1",
+  "reference_version": "manual-derivation per plan section 3.2 bit layout; cross-checked against canboat canboat.json pinned release v9.3.0 (usage restricted to 29-bit ID field interpretation)",
+  "notes": "0x18F80196 appears in the plan's CLI example with data_page=1/pgn=129025, which contradicts the section 3.2 formula (dp = (raw>>24)&1 gives dp=0, pgn=63489). The self-consistent raw for PGN 129025 is 0x19F80196. All vectors below are derived strictly from the 3.2 formula.",
+  "vectors": [
+    {
+      "id": "ID-001",
+      "source": "manual-derivation",
+      "description": "all-zero identifier",
+      "raw": "0x00000000",
+      "expected": {
+        "priority": 0,
+        "reserved": 0,
+        "data_page": 0,
+        "pdu_format": 0,
+        "pdu_specific": 0,
+        "source": 0,
+        "pdu": "PDU1",
+        "destination": 0,
+        "pgn": 0
+      }
+    },
+    {
+      "id": "ID-002",
+      "source": "manual-derivation",
+      "description": "maximum 29-bit value",
+      "raw": "0x1FFFFFFF",
+      "expected": {
+        "priority": 7,
+        "reserved": 1,
+        "data_page": 1,
+        "pdu_format": 255,
+        "pdu_specific": 255,
+        "source": 255,
+        "pdu": "PDU2",
+        "destination": null,
+        "pgn": 131071
+      }
+    },
+    {
+      "id": "ID-003",
+      "source": "manual-derivation",
+      "description": "value beyond 29 bits is rejected",
+      "raw": "0x20000000",
+      "expected": {
+        "error": "InvalidCanId"
+      }
+    },
+    {
+      "id": "ID-011",
+      "source": "manual-derivation",
+      "description": "ISO Request, PGN 59904, PDU1 to global address 255",
+      "raw": "0x18EAFFFE",
+      "expected": {
+        "priority": 6,
+        "reserved": 0,
+        "data_page": 0,
+        "pdu_format": 234,
+        "pdu_specific": 255,
+        "source": 254,
+        "pdu": "PDU1",
+        "destination": 255,
+        "pgn": 59904
+      }
+    },
+    {
+      "id": "ID-012",
+      "source": "manual-derivation",
+      "description": "Position Rapid Update, PGN 129025, PDU2 broadcast; dp=1 so raw has bit 24 set (plan 25.3 raw is a typo, see notes)",
+      "raw": "0x19F80196",
+      "expected": {
+        "priority": 6,
+        "reserved": 0,
+        "data_page": 1,
+        "pdu_format": 248,
+        "pdu_specific": 1,
+        "source": 150,
+        "pdu": "PDU2",
+        "destination": null,
+        "pgn": 129025
+      }
+    },
+    {
+      "id": "ID-013",
+      "source": "manual-derivation",
+      "description": "reserved bit set: strict rejects, lenient accepts with ReservedBitSet diagnostic",
+      "raw": "0x1A000055",
+      "expected": {
+        "priority": 6,
+        "reserved": 1,
+        "data_page": 0,
+        "pdu_format": 0,
+        "pdu_specific": 0,
+        "source": 85,
+        "strict_error": "InvalidCanId",
+        "lenient_diagnostics": ["ReservedBitSet"]
+      }
+    }
+  ]
+}

@@ -421,8 +421,8 @@ test "PGN default registry support matrix" {
 /// T11: Product Information end-to-end — typed encode, Fast Packet
 /// segmentation, shuffled ingest, reassembly and typed decode.
 test "PGN-126996 fast packet end-to-end" {
-  let meta = pgn_meta_product_info()
-  let r = Registry::new()
+  let meta = @pgn.pgn_meta_product_info()
+  let r = @pgn.default_registry()
   let fields : Array[(String, @codec.FieldValue)] = [
     ("NMEA 2000 Version", @codec.Unsigned(2100UL)),
     ("Product Code", @codec.Unsigned(888UL)),
@@ -482,6 +482,7 @@ test "PGN-126996 fast packet end-to-end" {
             _ => fail("serial mismatch after round-trip")
           }
         }
+        Known(pgn=_, name=_, fields=_) => fail("wrong PGN decoded")
         Unknown(_) => fail("product info must be known")
       }
     }

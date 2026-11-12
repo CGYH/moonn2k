@@ -114,9 +114,23 @@ fn interpret(f : PgnField, raw : UInt64) -> @codec.FieldValue {
       @codec.Lookup(raw, name)
     }
     Unsigned | Signed =>
-      match f.resolution {
-        Some(res) => @codec.Physical(raw, res, offset_value(f.offset))
-        None => @codec.Unsigned(raw)
+      match (f.field_type, f.resolution) {
+        (
+          Signed,
+          // Sign-extend first, then scale: signed fields keep their value,
+          // not their raw bit pattern.
+          Some(res),
+        ) => {
+          let v = raw.reinterpret_as_int64()
+          @codec.SignedPhysical(v, res, offset_value(f.offset))
+        }
+        (_, Some(res)) => @codec.Physical(raw, res, offset_value(f.offset))
+        (_, None) =>
+          if f.field_type is Signed {
+            @codec.Signed(raw.reinterpret_as_int64())
+          } else {
+            @codec.Unsigned(raw)
+          }
       }
     BitField => @codec.Bits(raw)
     // Text/Opaque are handled in the byte-oriented branch above.

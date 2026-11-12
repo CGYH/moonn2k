@@ -1,0 +1,117 @@
+{
+ "schema": "moonn2k-pgn-vectors/1",
+ "reference_version": "field layouts from canboat/canboat@6ce848c6048ae81414c90dd3cee57699f98c6738 docs/canboat.json (SchemaVersion 2.8.0); vectors hand-derived from those layouts and verified against moonn2k decode/encode round-trips",
+ "vectors": {
+  "127250_normal": {
+   "payload_hex": "4211116400ceff01",
+   "expected": {
+    "SID": 66,
+    "Heading_raw": 4369,
+    "Heading_value": 0.4369,
+    "Deviation_raw": 100,
+    "Variation_raw": -50,
+    "Reference_raw": 1,
+    "Reference_name": "Magnetic"
+   }
+  },
+  "127250_na": {
+   "payload_hex": "ffffffff7fff7f01"
+  },
+  "128267_normal": {
+   "payload_hex": "0c40e201001efb0a",
+   "expected": {
+    "SID": 12,
+    "Depth_raw": 123456,
+    "Depth_value": 1234.56,
+    "Offset_raw": -1250,
+    "Offset_value": -1.25,
+    "Range_raw": 10
+   }
+  },
+  "129025_normal": {
+   "payload_hex": "40a13120fa0cfbf9",
+   "expected": {
+    "Latitude_raw": 540123456,
+    "Latitude_value": 54.0123456,
+    "Longitude_raw": -100987654,
+    "Longitude_value": -10.0987654
+   }
+  },
+  "129025_na": {
+   "payload_hex": "ffffff7fffffff7f"
+  },
+  "129026_normal": {
+   "payload_hex": "4d003930fa000000",
+   "expected": {
+    "SID": 77,
+    "COG_Reference_raw": 0,
+    "COG_raw": 12345,
+    "SOG_raw": 250,
+    "SOG_value": 2.5
+   }
+  },
+  "130306_normal": {
+   "payload_hex": "c852035c3d020000",
+   "expected": {
+    "SID": 200,
+    "Wind_Speed_raw": 850,
+    "Wind_Speed_value": 8.5,
+    "Wind_Angle_raw": 15708,
+    "Reference_raw": 2,
+    "Reference_name": "Apparent (Relative to vessel centerline)"
+   }
+  },
+  "59904_request_product_info": {
+   "payload_hex": "14f001",
+   "expected": {
+    "PGN requested_raw": 126996
+   }
+  },
+  "60928_normal": {
+   "payload_hex": "64403f170a8278c1",
+   "expected": {
+    "Unique_Number_raw": 2048100,
+    "Manufacturer_Code_raw": 185,
+    "Device_Function_raw": 130,
+    "Device_Class_raw": 60,
+    "Industry_Group_raw": 4,
+    "Arbitrary_address_capable": 1
+   }
+  },
+  "126992_normal": {
+   "payload_hex": "ff00384a00ccbf19",
+   "expected": {
+    "SID": 255,
+    "Source_raw": 0,
+    "Date_raw": 19000,
+    "Time_raw": 432000000,
+    "Time_value": 43200.0
+   }
+  },
+  "126993_normal": {
+   "payload_hex": "e8032a3100000000",
+   "expected": {
+    "Data_transmit_offset_raw": 1000,
+    "Data_transmit_offset_value": 1.0,
+    "Sequence_Counter_raw": 42,
+    "Controller_1_State": 1,
+    "Controller_2_State": 0,
+    "Equipment_Status": 3
+   }
+  },
+  "126996_normal": {
+   "payload_hex": "340878036d6f6f6e6e326b2d64656d6f000000000000000000000000000000000000000076302e312e30000000000000000000000000000000000000000000000000000073696d2d756e69742d3100000000000000000000000000000000000000000000534e3030303432000000000000000000000000000000000000000000000000000001",
+   "expected": {
+    "NMEA 2000 Version_raw": 2100,
+    "NMEA 2000 Version_value": 2.1,
+    "Product Code_raw": 888,
+    "Model ID_text": "moonn2k-demo",
+    "Software Version Code_text": "v0.1.0",
+    "Model Version_text": "sim-unit-1",
+    "Model Serial Code_text": "SN00042",
+    "Certification_Level_raw": 0,
+    "Load_Equivalency_raw": 1
+   }
+  }
+ }
+}

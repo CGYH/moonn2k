@@ -16,6 +16,9 @@ pub(all) enum FieldValue {
   /// Physical quantity: `value = raw * resolution + offset`, with the raw
   /// bits kept alongside.
   Physical(UInt64, Double, Double)
+  /// Physical quantity for two's-complement signed fields:
+  /// `value = v * resolution + offset` with the sign-extended value kept.
+  SignedPhysical(Int64, Double, Double)
   /// Enum/lookup entry; None when the raw value has no known name.
   Lookup(UInt64, String?)
   /// Bit field (flags), raw only.
@@ -42,6 +45,7 @@ pub fn FieldValue::raw(self : FieldValue) -> UInt64? {
     Unsigned(raw) => Some(raw)
     Signed(raw) => Some(raw.reinterpret_as_uint64())
     Physical(raw, _, _) => Some(raw)
+    SignedPhysical(v, _, _) => Some(v.reinterpret_as_uint64())
     Lookup(raw, _) => Some(raw)
     Bits(raw) => Some(raw)
     Text(_) => None
@@ -51,11 +55,14 @@ pub fn FieldValue::raw(self : FieldValue) -> UInt64? {
 }
 
 ///|
-/// Physical value for a Physical field: `raw * resolution + offset`.
+/// Physical value: `raw * resolution + offset` for unsigned fields and
+/// `v * resolution + offset` for signed fields.
 pub fn FieldValue::physical(self : FieldValue) -> Double? {
   match self {
     Physical(raw, resolution, offset) =>
       Some(raw.to_double() * resolution + offset)
+    SignedPhysical(v, resolution, offset) =>
+      Some(v.to_double() * resolution + offset)
     _ => None
   }
 }

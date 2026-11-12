@@ -11,12 +11,13 @@ pub struct BitWriter {
 }
 
 ///|
-/// Construct a writer for `size` bytes (1..64). The buffer starts zeroed.
+/// Construct a writer for `size` bytes (1..223; the upper bound matches
+/// the Fast Packet maximum payload). The buffer starts zeroed.
 pub fn BitWriter::new(size : Int32) -> BitWriter raise @protocol.ProtocolError {
-  if size < 1 || size > 64 {
+  if size < 1 || size > 223 {
     raise @protocol.InvalidFrameLength(
       length=size,
-      reason="bit writer size must be 1..64 bytes",
+      reason="bit writer size must be 1..223 bytes",
     )
   }
   { data: FixedArray::make(size, b'\x00'), }

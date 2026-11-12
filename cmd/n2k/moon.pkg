@@ -1,0 +1,6 @@
+import {
+  "CGYH/moonn2k/src/cli",
+  "moonbitlang/core/env",
+}
+
+pkgtype(kind: "executable")

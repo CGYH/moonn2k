@@ -1,5 +1,8 @@
 # Protocol scope
 
+See [compliance.md](compliance.md) for the target NMEA 2000 version, the
+precise P0 conformance endpoint and worked message input/output examples.
+
 ## What P0 includes
 
 - Extended 29-bit CAN ID parsing and construction: priority, reserved bit,

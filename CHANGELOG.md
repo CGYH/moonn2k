@@ -12,6 +12,10 @@ layout, JSON envelope key or exit code was touched.
 - Toolchain moved from release `0.1.20261104` (moonc v0.10.20) to
   `0.1.20261126` (moonc v1.0.0-rc1), which is the version the project now
   targets and the minimum the CI enforces (`.moonc-minimum`).
+- Published to mooncakes.io as `CGYH/moonn2k` 0.1.1 (Apache-2.0). Consumers
+  install it with `moon add CGYH/moonn2k`; the package page and generated API
+  docs are at <https://mooncakes.io/docs/CGYH/moonn2k>. This version is
+  immutable: corrections ship as 0.1.2.
 - `moon fmt` output for multi-line enum constructor payloads now carries a
   trailing comma on the last field; four declarations in
   `src/protocol/error.mbt` and `src/registry/decode.mbt` were reordered by

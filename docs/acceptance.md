@@ -19,6 +19,7 @@
 | Toolchain requirement enforced | `.moonc-minimum` asserted by `.github/scripts/install-toolchain.sh`; the assertion also runs on cache hits. `.moonbit-version` records the release verified locally | done |
 | Pinned references | `THIRD_PARTY.md` (canboat@6ce848c6) | done |
 | Honest scope | `docs/protocol-scope.md` | done |
+| Published to mooncakes.io | `CGYH/moonn2k` 0.1.1, Apache-2.0, `moon add CGYH/moonn2k`; page and generated docs at <https://mooncakes.io/docs/CGYH/moonn2k> | done |
 
 ## Reproduction steps (clean environment)
 
@@ -72,6 +73,5 @@ for that target — see the CI run linked in the README.
   database instead.
 - NA patterns are common practice, not verified against official NMEA data.
 - No fuzzing beyond deterministic pseudo-random bit round-trips.
-- mooncakes.io publication has not been done (requires account).
-- The GitHub repository URL in `moon.mod` assumes `CGYH/moonn2k`; adjust if
-  the final repository name differs.
+- Version 0.1.1 is immutable once published: fixes ship as 0.1.2, not as an
+  edit of 0.1.1. Versions >= 1.0.0 cannot be published before MoonBit 1.0.

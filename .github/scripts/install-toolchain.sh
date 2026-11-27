@@ -12,25 +12,34 @@
 # from the repository and the compiler floor is asserted on every run, cache hit
 # or not.
 
-set -euo pipefail
+set -Eeuo pipefail
 
-readonly CLI_BASE="https://cli.moonbitlang.com"
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-
-log() { printf '[toolchain] %s\n' "$*"; }
+# Without this, any unguarded command in this script aborts the job with a bare
+# "exit code 1" and no clue which line died. `set -E` propagates the trap into
+# functions and substitutions; BASH_COMMAND names the exact failing command.
+trap 'rc=$?; echo "::error title=install-toolchain::exited ${rc} on: ${BASH_COMMAND}"' ERR
 
 die() {
-  printf '::error::%s\n' "$*"
+  echo "::error title=install-toolchain::$*"
   exit 1
 }
 
-cd "${REPO_ROOT}"
+log() {
+  echo "[toolchain] $*"
+}
+
+cli_base="https://cli.moonbitlang.com"
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" ||
+  die "cannot resolve the script directory"
+repo_root="$(cd "${script_dir}/../.." && pwd)" ||
+  die "cannot resolve the repository root from ${script_dir}"
+cd "${repo_root}" || die "cannot enter ${repo_root}"
 
 # Read the two pins. `tr` strips the trailing newline and any stray whitespace;
 # a missing or empty file is a repository bug, not a transient failure.
-[[ -f .moonbit-version ]] || die ".moonbit-version is missing"
-[[ -f .moonc-minimum ]] || die ".moonc-minimum is missing"
+[[ -f .moonbit-version ]] || die ".moonbit-version is missing in ${repo_root}"
+[[ -f .moonc-minimum ]] || die ".moonc-minimum is missing in ${repo_root}"
 release_tag="$(tr -d '[:space:]' < .moonbit-version)"
 moonc_floor="$(tr -d '[:space:]' < .moonc-minimum)"
 [[ -n "${release_tag}" ]] || die ".moonbit-version is empty"
@@ -43,14 +52,26 @@ log "release=${release_tag} floor=${moonc_floor} moon_home=${moon_home}"
 if [[ -x "${moon_bin}/moon" ]]; then
   log "reusing toolchain found at ${moon_bin}"
 else
-  # Download the installer to a file instead of piping it into bash: with
-  # `set -o pipefail` a failed download and a failed installer are otherwise
-  # indistinguishable, and the error surfaces as an unexplained exit code.
-  installer="$(mktemp)"
-  log "downloading installer from ${CLI_BASE}/install/unix.sh"
-  curl -fsSL --retry 3 --retry-delay 2 -o "${installer}" "${CLI_BASE}/install/unix.sh"
+  # Download the installer to a file instead of piping it into bash: under
+  # `set -o pipefail` a failed download and a failed install are otherwise
+  # indistinguishable, and the real status is lost.
+  installer="$(mktemp)" || die "cannot create a temporary file"
+  log "downloading ${cli_base}/install/unix.sh"
+  # `$?` inside `if ! cmd` is the status of the negation, i.e. always 0, so the
+  # real status has to be captured with `||`.
+  curl_rc=0
+  curl -fsSL --retry 3 --retry-delay 2 -o "${installer}" "${cli_base}/install/unix.sh" ||
+    curl_rc=$?
+  if [[ ${curl_rc} -ne 0 ]]; then
+    ls -l "${installer}" || true
+    die "curl failed with ${curl_rc} while fetching the installer"
+  fi
   log "installer is $(wc -c < "${installer}") bytes; installing ${release_tag}"
-  MOONBIT_INSTALL_VERSION="${release_tag}" bash "${installer}"
+  install_rc=0
+  MOONBIT_INSTALL_VERSION="${release_tag}" bash "${installer}" || install_rc=$?
+  if [[ ${install_rc} -ne 0 ]]; then
+    die "the installer failed with ${install_rc} for release ${release_tag}"
+  fi
   rm -f "${installer}"
 fi
 
@@ -69,9 +90,9 @@ fi
 
 # `moon version --all` prints e.g. "moonc v1.0.0-rc1+3c0520448 (2026-11-26) ...".
 version_report="$(moon version --all)"
-printf '%s\n' "${version_report}"
-moonc_version="$(printf '%s\n' "${version_report}" | sed -n 's/^moonc v\{0,1\}\([^ +]*\).*/\1/p' | head -n 1)"
-[[ -n "${moonc_version}" ]] || die "could not read the moonc version from 'moon version --all'"
+echo "${version_report}"
+moonc_version="$(echo "${version_report}" | sed -n 's/^moonc v\{0,1\}\([^ +]*\).*/\1/p' | head -n 1)"
+[[ -n "${moonc_version}" ]] || die "cannot parse the moonc version from the output above"
 
 log "moonc ${moonc_version} (floor ${moonc_floor})"
 

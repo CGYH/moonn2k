@@ -16,7 +16,7 @@
 | Deterministic simulator | `src/simulator/simulator_test.mbt` (SIM-001..006) | done |
 | CLI six commands + exit codes | `src/cli/cli_test.mbt` (CLI-001..010) | done |
 | CI gates on 3 targets | `.github/workflows/ci.yml` (fmt, then check + build + test × wasm-gc, js, native, plus a CLI/examples smoke job) | done |
-| Toolchain requirement enforced | `.moonbit-version` + `.moonc-minimum` asserted by `.github/scripts/install-toolchain.sh`; a stale cache cannot bypass the assertion | done |
+| Toolchain requirement enforced | `.moonc-minimum` asserted by `.github/scripts/install-toolchain.sh`; the assertion also runs on cache hits. `.moonbit-version` records the release verified locally | done |
 | Pinned references | `THIRD_PARTY.md` (canboat@6ce848c6) | done |
 | Honest scope | `docs/protocol-scope.md` | done |
 
@@ -26,12 +26,11 @@
 # 1. clone
 git clone https://github.com/CGYH/moonn2k && cd moonn2k
 
-# 2. install the pinned toolchain (version in .moonbit-version, floor in .moonc-minimum)
+# 2. install the toolchain; moonc must satisfy .moonc-minimum (1.0.0-rc1)
 #    Linux/macOS:
-curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$(cat .moonbit-version)"
+curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 #    Windows (PowerShell):
 #      Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-#      $env:MOONBIT_INSTALL_VERSION = (Get-Content .moonbit-version -Raw).Trim()
 #      irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
 moon version --all          # moonc must be >= 1.0.0-rc1
 

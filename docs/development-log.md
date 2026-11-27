@@ -78,14 +78,31 @@ formatting — the pin existed only in a comment. The lesson is that a
 `.moonbit-version` file nobody reads is worse than no file, because it makes
 the workflow *look* reproducible.
 
-Fix: `.github/scripts/install-toolchain.sh` reads the release tag from
-`.moonbit-version` and passes it to the installer, then asserts the resulting
-`moonc` against `.moonc-minimum` with `sort -V -C`. The assertion runs after a
-cache restore too, so a stale `~/.moon` cache cannot quietly downgrade the
-compiler. The workflow gained a `moon build` step (the old one only had
-fmt/check/test but the acceptance wording asks for check *and* build *and*
-test) and a smoke job that runs the CLI selftest, one end-to-end decode and
-both examples.
+Fix: `.github/scripts/install-toolchain.sh` installs from the only archive the
+CDN actually serves and asserts the compiler floor `.moonc-minimum` with
+`sort -V -C`; the assertion runs after a cache restore too, so a stale
+`~/.moon` cache cannot quietly downgrade the compiler. `.moonbit-version` is
+kept as the record of what was verified locally, and a mismatch is reported as
+a warning — a warning, not a pin, because probing showed every versioned
+archive path (`binaries/<tag>/moonbit-linux-x86_64.tar.gz`,
+`cores/core-<tag>.tar.gz`) answers `403 Forbidden` while `binaries/latest/...`
+answers `200`. Claiming to pin a download the CDN will not serve was the same
+mistake as the original comment-only pin, just in a more elaborate form.
+
+This took four CI attempts to find, because the failing step reported only
+"exit code 1" with no output and the job logs were not retrievable from this
+environment. The way through was to make the script report on itself: `set -E`
+plus an ERR trap that echoes `BASH_COMMAND` as a `::error title=...::`
+annotation, which *is* readable through the check-run API. That annotation
+named the culprit in one line. Two intermediate commits existed only to get
+that visibility and also fixed two genuine bugs in the error path (`$?` inside
+`if ! cmd`; `readonly VAR="$(...)"` aborting silently under `set -e`).
+
+The workflow also gained a `moon build` step — the acceptance wording asks for
+check *and* build *and* test, while the old workflow only had fmt/check/test —
+and a smoke job that runs `n2k selftest`, one end-to-end decode and both
+examples. `moon fmt --check` is target independent, so it moved to its own job
+instead of running three times.
 
 Known local limitation, recorded rather than worked around:
 `moon test --target native` cannot run on this Windows machine — every runtime

@@ -13,10 +13,17 @@ moon test --target all
 CI (`.github/workflows/ci.yml`) runs `moon fmt --check` once, then
 `moon check` + `moon build` + `moon test` for each of wasm-gc, JS and native,
 plus a smoke job that runs `n2k selftest`, one end-to-end decode and both
-examples. The toolchain is installed by `.github/scripts/install-toolchain.sh`,
-which reads the release tag from `.moonbit-version` and refuses to continue
-unless the resulting `moonc` is at least `.moonc-minimum` — the assertion runs
-on cache hits too, so a stale cache cannot silently downgrade the compiler.
+examples. `.github/scripts/install-toolchain.sh` installs the toolchain and
+refuses to continue unless the resulting `moonc` is at least `.moonc-minimum`;
+the assertion runs on cache hits too, so a stale cache cannot silently
+downgrade the compiler.
+
+The floor is asserted rather than pinned because the MoonBit CDN only serves
+the `latest` alias: every versioned archive path
+(`binaries/<tag>/...`, `cores/core-<tag>.tar.gz`) answers `403 Forbidden`,
+so `install/unix.sh <tag>` cannot be used. `.moonbit-version` records the
+release the code was verified against; CI emits a warning if `latest` has
+moved past it.
 
 ## Test inventory
 

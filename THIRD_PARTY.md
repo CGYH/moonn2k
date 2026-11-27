@@ -34,8 +34,9 @@ from the declared length, so padding never leaks into decoded values.
 
 ## moonbitlang/core
 
-- Runtime dependency of every MoonBit project, resolved by the pinned
-  toolchain in `.moonbit-version` (`0.1.20261126`, moonc v1.0.0-rc1). The
-  compiler floor the project requires is declared separately in
-  `.moonc-minimum` and asserted by CI.
+- Runtime dependency of every MoonBit project, resolved by the installed
+  toolchain: release `0.1.20261126`, moonc v1.0.0-rc1 as verified locally and
+  recorded in `.moonbit-version`. The compiler floor the project requires is
+  declared in `.moonc-minimum` and asserted by CI, because the MoonBit CDN
+  serves only the `latest` release archive.
 - License: Apache-2.0.

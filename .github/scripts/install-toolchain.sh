@@ -1,22 +1,29 @@
 #!/usr/bin/env bash
-# Install the MoonBit toolchain pinned by .moonbit-version, then fail unless the
-# installed moonc satisfies .moonc-minimum.
+# Install the MoonBit toolchain and refuse to continue unless the resulting
+# moonc satisfies .moonc-minimum.
 #
-# Two independent version numbers are involved and must not be conflated:
-#   .moonbit-version  the MoonBit *release tag* the installer downloads
-#   .moonc-minimum    the *compiler* version this project requires
+# Why this asserts instead of pinning the download:
 #
-# The release tag does not encode the moonc version, so pinning the release is
-# not enough on its own: an unpinned `install/unix.sh` would silently track
-# "latest" while this file still claimed to be pinned. Both are therefore read
-# from the repository and the compiler floor is asserted on every run, cache hit
-# or not.
+#   The MoonBit CDN serves only the `latest` alias. Every versioned path was
+#   probed and answers 403 Forbidden:
+#     binaries/0.1.20261126/moonbit-linux-x86_64.tar.gz   -> 403
+#     binaries/0.1.20261104/moonbit-linux-x86_64.tar.gz   -> 403
+#     cores/core-0.1.20261126.tar.gz                      -> 403
+#     binaries/latest/...                                 -> 200
+#   So `install/unix.sh <version>` cannot work, and the previous workflow's
+#   claim to install the toolchain "pinned by .moonbit-version" was never true.
+#
+#   The guarantee therefore comes from the assertion, not from the URL: we
+#   install whatever `latest` is and fail loudly if that is older than the
+#   floor this project requires. `.moonbit-version` records the release the
+#   code was verified against; a mismatch is reported as a warning, because it
+#   is information, not a reason to redo the release.
 
 set -Eeuo pipefail
 
-# Without this, any unguarded command in this script aborts the job with a bare
-# "exit code 1" and no clue which line died. `set -E` propagates the trap into
-# functions and substitutions; BASH_COMMAND names the exact failing command.
+# Without this, any unguarded command aborts the job with a bare "exit code 1"
+# and no clue which line died. `set -E` propagates the trap into functions and
+# substitutions; BASH_COMMAND names the exact failing command.
 trap 'rc=$?; echo "::error title=install-toolchain::exited ${rc} on: ${BASH_COMMAND}"' ERR
 
 die() {
@@ -36,18 +43,16 @@ repo_root="$(cd "${script_dir}/../.." && pwd)" ||
   die "cannot resolve the repository root from ${script_dir}"
 cd "${repo_root}" || die "cannot enter ${repo_root}"
 
-# Read the two pins. `tr` strips the trailing newline and any stray whitespace;
-# a missing or empty file is a repository bug, not a transient failure.
 [[ -f .moonbit-version ]] || die ".moonbit-version is missing in ${repo_root}"
 [[ -f .moonc-minimum ]] || die ".moonc-minimum is missing in ${repo_root}"
-release_tag="$(tr -d '[:space:]' < .moonbit-version)"
+verified_release="$(tr -d '[:space:]' < .moonbit-version)"
 moonc_floor="$(tr -d '[:space:]' < .moonc-minimum)"
-[[ -n "${release_tag}" ]] || die ".moonbit-version is empty"
+[[ -n "${verified_release}" ]] || die ".moonbit-version is empty"
 [[ -n "${moonc_floor}" ]] || die ".moonc-minimum is empty"
 
 moon_home="${MOON_HOME:-$HOME/.moon}"
 moon_bin="${moon_home}/bin"
-log "release=${release_tag} floor=${moonc_floor} moon_home=${moon_home}"
+log "verified_release=${verified_release} floor=${moonc_floor} moon_home=${moon_home}"
 
 if [[ -x "${moon_bin}/moon" ]]; then
   log "reusing toolchain found at ${moon_bin}"
@@ -66,11 +71,11 @@ else
     ls -l "${installer}" || true
     die "curl failed with ${curl_rc} while fetching the installer"
   fi
-  log "installer is $(wc -c < "${installer}") bytes; installing ${release_tag}"
+  log "installer is $(wc -c < "${installer}") bytes; installing latest"
   install_rc=0
-  MOONBIT_INSTALL_VERSION="${release_tag}" bash "${installer}" || install_rc=$?
+  bash "${installer}" || install_rc=$?
   if [[ ${install_rc} -ne 0 ]]; then
-    die "the installer failed with ${install_rc} for release ${release_tag}"
+    die "the installer failed with ${install_rc}"
   fi
   rm -f "${installer}"
 fi
@@ -85,21 +90,30 @@ fi
 if ! command -v moon > /dev/null 2>&1; then
   log "contents of ${moon_bin}:"
   ls -la "${moon_bin}" || true
-  die "'moon' is still not on PATH after installing ${release_tag}"
+  die "'moon' is still not on PATH after installing"
 fi
 
-# `moon version --all` prints e.g. "moonc v1.0.0-rc1+3c0520448 (2026-11-26) ...".
+# `moon version --all` prints, in order:
+#   moon 0.1.20261126 (ccd306a 2026-11-26) /home/runner/.moon/bin/moon
+#   moonc v1.0.0-rc1+3c0520448 (2026-11-26) /home/runner/.moon/bin/moonc
+#   moonrun 0.1.20261126 (ccd306a 2026-11-26) /home/runner/.moon/bin/moonrun
 version_report="$(moon version --all)"
 echo "${version_report}"
+
 moonc_version="$(echo "${version_report}" | sed -n 's/^moonc v\{0,1\}\([^ +]*\).*/\1/p' | head -n 1)"
 [[ -n "${moonc_version}" ]] || die "cannot parse the moonc version from the output above"
+installed_release="$(echo "${version_report}" | sed -n 's/^moon \([^ ]*\).*/\1/p' | head -n 1)"
 
-log "moonc ${moonc_version} (floor ${moonc_floor})"
+log "moonc ${moonc_version} (floor ${moonc_floor}), release ${installed_release}"
 
 # `sort -V -C` exits non-zero exactly when the two lines are out of version
 # order, i.e. when the installed moonc is older than the floor.
 if ! printf '%s\n%s\n' "${moonc_floor}" "${moonc_version}" | sort -V -C; then
   die "moonc ${moonc_version} is older than the required ${moonc_floor}"
+fi
+
+if [[ -n "${installed_release}" && "${installed_release}" != "${verified_release}" ]]; then
+  echo "::warning title=install-toolchain::CI installed release ${installed_release}, but .moonbit-version records ${verified_release} as the verified one. The compiler is still within the required floor."
 fi
 
 log "toolchain OK"

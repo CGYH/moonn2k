@@ -47,19 +47,27 @@ pinned at `canboat/canboat@6ce848c6048ae81414c90dd3cee57699f98c6738`
 
 ## Quick start
 
-Requirements: MoonBit toolchain `0.1.20261126` or newer as pinned in
-`.moonbit-version`, and **moonc >= `1.0.0-rc1`** (declared in `.moonc-minimum`
-and enforced by CI). Install exactly the pinned release:
+Requirements: **moonc >= `1.0.0-rc1`** (declared in `.moonc-minimum` and
+enforced by CI). The code in this repository was verified with release
+`0.1.20261126` (recorded in `.moonbit-version`).
+
+Install the toolchain:
 
 ```bash
 # Linux / macOS
-curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$(cat .moonbit-version)"
+curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 # Windows (PowerShell)
-#   $env:MOONBIT_INSTALL_VERSION = (Get-Content .moonbit-version -Raw).Trim()
+#   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 #   irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
 
 moon version --all          # moonc must be >= 1.0.0-rc1
 ```
+
+Note that the installers accept a version argument in principle, but the
+MoonBit CDN currently serves only the `latest` alias — every versioned
+archive path answers `403 Forbidden`. The compiler floor is therefore
+enforced by an assertion rather than by pinning the download; see
+`.github/scripts/install-toolchain.sh`.
 
 Then:
 
@@ -116,9 +124,10 @@ network socket. Fast Packet reassembly receives its time at every call site
 
 CI runs the same gates on wasm-gc, JS and native, adds `moon build` for each
 target, and finishes with a smoke job that runs `n2k selftest`, one end-to-end
-decode and both examples. The toolchain it uses is installed from
-`.moonbit-version` and the resulting `moonc` is asserted against
-`.moonc-minimum` on every run.
+decode and both examples. `.github/scripts/install-toolchain.sh` installs the
+toolchain and fails the job unless the resulting `moonc` satisfies
+`.moonc-minimum`; the assertion runs on cache hits too, so a stale `~/.moon`
+cache cannot quietly downgrade the compiler.
 
 ## Repository layout
 

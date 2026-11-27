@@ -21,9 +21,13 @@ layout, JSON envelope key or exit code was touched.
 - CI never reached its `check` and `test` steps: the toolchain step was named
   "pinned by .moonbit-version" but only ran the unpinned installer, so the
   runner silently used a newer formatter than the local pin and
-  `moon fmt --check` aborted the job at step 4. The toolchain is now really
-  pinned (`.github/scripts/install-toolchain.sh` reads `.moonbit-version` and
-  asserts `.moonc-minimum`), and a cache hit cannot bypass the assertion.
+  `moon fmt --check` aborted the job at step 4. The step is now honest about
+  what is possible: the MoonBit CDN serves only the `latest` archive (every
+  versioned path answers `403 Forbidden`), so the release cannot be pinned at
+  download time. CI therefore installs `latest` and asserts the compiler floor
+  from `.moonc-minimum`, failing the job if `moonc` is older — including on a
+  cache hit. `.moonbit-version` now documents the release verified locally and
+  a mismatch produces a warning instead of a false reproducibility claim.
 - CI now also runs `moon build` and a CLI/examples smoke job, so the
   check / build / test triple is covered on all three targets.
 

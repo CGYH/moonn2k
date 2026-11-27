@@ -1,7 +1,7 @@
 # moonn2k
 
 [![CI](https://github.com/CGYH/moonn2k/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CGYH/moonn2k/actions/workflows/ci.yml)
-[![mooncakes](https://img.shields.io/badge/mooncakes.io-0.1.1-blue)](https://mooncakes.io/docs/CGYH/moonn2k)
+[![mooncakes](https://img.shields.io/badge/mooncakes.io-0.1.2-blue)](https://mooncakes.io/docs/CGYH/moonn2k)
 
 **moonn2k** is a pure-MoonBit, offline-verifiable NMEA 2000 protocol toolkit:
 extended 29-bit CAN ID / PGN parsing, single-frame and Fast Packet codecs,
@@ -50,7 +50,7 @@ pinned at `canboat/canboat@6ce848c6048ae81414c90dd3cee57699f98c6738`
 
 ## Install
 
-As a dependency of another MoonBit project, version `0.1.1` is published to
+As a dependency of another MoonBit project, version `0.1.2` is published to
 mooncakes.io:
 
 ```bash

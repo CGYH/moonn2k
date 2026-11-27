@@ -3,16 +3,17 @@
 All notable changes to moonn2k are documented here.
 Format based on Keep a Changelog; versioning is SemVer-ish (0.x during development).
 
-## [Unreleased]
+## [0.1.2] - 2026-11-27
 
-Not yet published: `moon.mod` still says 0.1.1, which is the version on
-mooncakes.io, and this section describes what differs from that artifact.
+Neither defect below is fixed by 0.1.1: that version is published and
+immutable, and its artifact still announces the old version number and ships
+the old example.
 
 ### Fixed
-- The CLI JSON envelope reported `"version":"0.1.0"` after the module had
-  moved to 0.1.1: `@cli.VERSION` and `moon.mod`'s `version` are two
+- The CLI JSON envelope reported `"version":"0.1.0"` while the module had
+  already moved to 0.1.1: `@cli.VERSION` and `moon.mod`'s `version` are two
   independent literals with nothing cross-checking them. The constant now
-  says 0.1.1 and carries a comment stating the bump obligation; the envelope
+  says 0.1.2 and carries a comment stating the bump obligation; the envelope
   test asserts against the constant instead of a hard-coded string, so a
   future bump cannot silently rot the assertion.
 

@@ -10,7 +10,7 @@
 /// literals and nothing cross-checks them, so a release that forgets this line
 /// leaves the CLI reporting the previous version while the published package
 /// claims the new one.
-pub const VERSION : String = "0.1.1"
+pub const VERSION : String = "0.1.2"
 
 ///|
 /// Format a double with fixed 6-decimal precision and no exponent

@@ -5,3 +5,8 @@ target/
 .moonagent/
 *.core
 *.mbti
+
+# Local competition submission paperwork. Never committed and, because
+# `moon publish` honours .gitignore rules rather than git's tracked set,
+# never bundled into the published module either.
+申报书/

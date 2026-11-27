@@ -47,7 +47,21 @@ pinned at `canboat/canboat@6ce848c6048ae81414c90dd3cee57699f98c6738`
 
 ## Quick start
 
-Install the toolchain pinned in `.moonbit-version`, then:
+Requirements: MoonBit toolchain `0.1.20261126` or newer as pinned in
+`.moonbit-version`, and **moonc >= `1.0.0-rc1`** (declared in `.moonc-minimum`
+and enforced by CI). Install exactly the pinned release:
+
+```bash
+# Linux / macOS
+curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$(cat .moonbit-version)"
+# Windows (PowerShell)
+#   $env:MOONBIT_INSTALL_VERSION = (Get-Content .moonbit-version -Raw).Trim()
+#   irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+
+moon version --all          # moonc must be >= 1.0.0-rc1
+```
+
+Then:
 
 ```bash
 moon check --deny-warn
@@ -99,6 +113,12 @@ moon run cmd/n2k --target native -- selftest
 The core never reads files, never touches the wall clock and never opens a
 network socket. Fast Packet reassembly receives its time at every call site
 (`now_ms`), which makes timeout behaviour exactly testable.
+
+CI runs the same gates on wasm-gc, JS and native, adds `moon build` for each
+target, and finishes with a smoke job that runs `n2k selftest`, one end-to-end
+decode and both examples. The toolchain it uses is installed from
+`.moonbit-version` and the resulting `moonc` is asserted against
+`.moonc-minimum` on every run.
 
 ## Repository layout
 

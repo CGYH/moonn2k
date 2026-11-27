@@ -52,3 +52,43 @@ were run before every commit.
 
 Final state: 117 tests green on wasm-gc, js and native; fmt and
 `check --deny-warn` clean on all targets.
+
+## 2026-11-27 — toolchain moved to moonc v1.0.0-rc1, CI pin repaired
+
+Two separate defects, both invisible from the badge-free "green" claim above.
+
+**1. The toolchain was below the required compiler version.** Local development
+ran on moon `0.1.20261104` / moonc `v0.10.20`, but the competition baseline is
+moonc >= `1.0.0-rc1`. Upgrading to moon `0.1.20261126` / moonc
+`v1.0.0-rc1+3c0520448` was, to our surprise, almost free: `moon check
+--target all --deny-warn` stayed at **zero warnings** with no source change, so
+none of the 0.10-era syntax (`#derive`, `suberror`, `Int32`, qualified test
+items) needed rewriting. The only fallout was formatting: the new formatter
+requires a trailing comma on the last field of a multi-line enum constructor
+payload, which reordered `src/protocol/error.mbt` (3 declarations) and
+`src/registry/decode.mbt` (1). Nothing semantic changed, which is why 0.1.1 is
+a patch release.
+
+**2. CI had never actually run its gates.** Both historical workflow runs
+failed at step 4 (`moon fmt --check`, exit 255) and skipped `check` and `test`.
+The step was labelled "pinned by .moonbit-version" but its body was just
+`curl .../install/unix.sh | bash`, i.e. it installed **latest**. On the runner
+that was newer than the local pin, so the newer formatter rejected the older
+formatting — the pin existed only in a comment. The lesson is that a
+`.moonbit-version` file nobody reads is worse than no file, because it makes
+the workflow *look* reproducible.
+
+Fix: `.github/scripts/install-toolchain.sh` reads the release tag from
+`.moonbit-version` and passes it to the installer, then asserts the resulting
+`moonc` against `.moonc-minimum` with `sort -V -C`. The assertion runs after a
+cache restore too, so a stale `~/.moon` cache cannot quietly downgrade the
+compiler. The workflow gained a `moon build` step (the old one only had
+fmt/check/test but the acceptance wording asks for check *and* build *and*
+test) and a smoke job that runs the CLI selftest, one end-to-end decode and
+both examples.
+
+Known local limitation, recorded rather than worked around:
+`moon test --target native` cannot run on this Windows machine — every runtime
+C source fails with `cl.exe ... error D8050: 无法执行 c1.dll`. An empty
+`moon new` project fails identically, so it is the local MSVC install, not this
+codebase. Native is covered by CI on `ubuntu-latest` instead.

@@ -5,9 +5,31 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  core:
-    name: fmt + check + test (${{ matrix.target }})
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache MoonBit toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.moon
+          key: moonbit-${{ runner.os }}-${{ hashFiles('.moonbit-version') }}
+      - name: Install pinned toolchain
+        run: bash .github/scripts/install-toolchain.sh
+      - name: Format check
+        run: moon fmt --check
+
+  gates:
+    name: check + build + test (${{ matrix.target }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -15,13 +37,39 @@ jobs:
         target: [wasm-gc, js, native]
     steps:
       - uses: actions/checkout@v4
-      - name: Install MoonBit toolchain (pinned by .moonbit-version)
-        run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
-          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
-      - name: Format check
-        run: moon fmt --check
+      - name: Cache MoonBit toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.moon
+          key: moonbit-${{ runner.os }}-${{ hashFiles('.moonbit-version') }}
+      - name: Install pinned toolchain
+        run: bash .github/scripts/install-toolchain.sh
       - name: Check
         run: moon check --target ${{ matrix.target }} --deny-warn
+      - name: Build
+        run: moon build --target ${{ matrix.target }}
       - name: Test
         run: moon test --target ${{ matrix.target }}
+
+  smoke:
+    name: CLI and examples smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache MoonBit toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.moon
+          key: moonbit-${{ runner.os }}-${{ hashFiles('.moonbit-version') }}
+      - name: Install pinned toolchain
+        run: bash .github/scripts/install-toolchain.sh
+      - name: CLI selftest
+        run: moon run cmd/n2k --target native -- selftest
+      - name: Decode one frame end to end
+        run: >-
+          moon run cmd/n2k --target native -- decode-frame
+          --id 0x19F80196 --data 40a13120fa0cfbf9 --json
+      - name: Run basic_decode example
+        run: moon run examples/basic_decode --target native
+      - name: Run virtual_vessel example
+        run: moon run examples/virtual_vessel --target native

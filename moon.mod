@@ -1,7 +1,7 @@
 // moonn2k: NMEA 2000 protocol toolkit in pure MoonBit
 name = "CGYH/moonn2k"
 
-version = "0.1.0"
+version = "0.1.1"
 
 readme = "README.md"
 

@@ -3,6 +3,30 @@
 All notable changes to moonn2k are documented here.
 Format based on Keep a Changelog; versioning is SemVer-ish (0.x during development).
 
+## [0.1.1] - 2026-11-27
+
+Toolchain and CI correctness release. **No behavioural change**: no payload
+layout, JSON envelope key or exit code was touched.
+
+### Changed
+- Toolchain moved from release `0.1.20261104` (moonc v0.10.20) to
+  `0.1.20261126` (moonc v1.0.0-rc1), which is the version the project now
+  targets and the minimum the CI enforces (`.moonc-minimum`).
+- `moon fmt` output for multi-line enum constructor payloads now carries a
+  trailing comma on the last field; four declarations in
+  `src/protocol/error.mbt` and `src/registry/decode.mbt` were reordered by
+  the new formatter. Formatting only.
+
+### Fixed
+- CI never reached its `check` and `test` steps: the toolchain step was named
+  "pinned by .moonbit-version" but only ran the unpinned installer, so the
+  runner silently used a newer formatter than the local pin and
+  `moon fmt --check` aborted the job at step 4. The toolchain is now really
+  pinned (`.github/scripts/install-toolchain.sh` reads `.moonbit-version` and
+  asserts `.moonc-minimum`), and a cache hit cannot bypass the assertion.
+- CI now also runs `moon build` and a CLI/examples smoke job, so the
+  check / build / test triple is covered on all three targets.
+
 ## [0.1.0] - 2026-11-12
 
 P0 complete (hackathon scope). Everything below is covered by 117 tests

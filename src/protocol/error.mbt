@@ -22,7 +22,7 @@ pub(all) suberror ProtocolError {
     field~ : String,
     offset~ : Int32,
     needed~ : Int32,
-    available~ : Int32
+    available~ : Int32,
   )
   /// A field value violates its PGN definition (range, enum, encoding).
   InvalidFieldValue(pgn~ : Int32, field~ : String, reason~ : String)
@@ -36,14 +36,14 @@ pub(all) suberror ProtocolError {
     pgn~ : Int32,
     source~ : Int32,
     sequence_id~ : Int32,
-    frame_index~ : Int32
+    frame_index~ : Int32,
   )
   /// Same session and frame index but different payload bytes.
   ConflictingDuplicateFrame(
     pgn~ : Int32,
     source~ : Int32,
     sequence_id~ : Int32,
-    frame_index~ : Int32
+    frame_index~ : Int32,
   )
   /// More concurrent reassembly sessions than the configured limit.
   SessionLimitExceeded(limit~ : Int32)

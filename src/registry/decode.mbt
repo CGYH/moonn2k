@@ -9,7 +9,7 @@ pub enum DecodedMessage {
   Known(
     pgn~ : Int32,
     name~ : String,
-    fields~ : Array[(String, @codec.FieldValue)]
+    fields~ : Array[(String, @codec.FieldValue)],
   )
   /// Unknown PGN: the original message, untouched. Never an error.
   Unknown(@message.Message)

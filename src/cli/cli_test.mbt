@@ -123,10 +123,14 @@ test "CLI-010 help" {
 
 ///|
 /// JSON envelope shape (plan 25.1/25.2): tool, version, ok, diagnostics.
+/// The version comes from the constant rather than a literal, so bumping the
+/// tool version does not silently rot this assertion.
 test "CLI envelope shape" {
   let out = @cli.run(["id", "0x18EAFFFE", "--json"])
   assert_true(
-    out.stdout().has_prefix("{\"tool\":\"moonn2k\",\"version\":\"0.1.0\""),
+    out
+    .stdout()
+    .has_prefix("{\"tool\":\"moonn2k\",\"version\":\"\{@cli.VERSION}\""),
   )
   assert_true(out.stdout().has_suffix(",\"diagnostics\":[]}\n"))
   let err = @cli.run(["id", "0x3FFFFFFF"])

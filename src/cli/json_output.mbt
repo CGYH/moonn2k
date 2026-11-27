@@ -5,7 +5,12 @@
 
 ///|
 /// CLI/tool version reported in every JSON envelope.
-pub const VERSION : String = "0.1.0"
+///
+/// Must be bumped together with `version` in `moon.mod`: the two are separate
+/// literals and nothing cross-checks them, so a release that forgets this line
+/// leaves the CLI reporting the previous version while the published package
+/// claims the new one.
+pub const VERSION : String = "0.1.1"
 
 ///|
 /// Format a double with fixed 6-decimal precision and no exponent

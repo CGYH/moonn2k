@@ -3,6 +3,29 @@
 All notable changes to moonn2k are documented here.
 Format based on Keep a Changelog; versioning is SemVer-ish (0.x during development).
 
+## [Unreleased]
+
+Not yet published: `moon.mod` still says 0.1.1, which is the version on
+mooncakes.io, and this section describes what differs from that artifact.
+
+### Fixed
+- The CLI JSON envelope reported `"version":"0.1.0"` after the module had
+  moved to 0.1.1: `@cli.VERSION` and `moon.mod`'s `version` are two
+  independent literals with nothing cross-checking them. The constant now
+  says 0.1.1 and carries a comment stating the bump obligation; the envelope
+  test asserts against the constant instead of a hard-coded string, so a
+  future bump cannot silently rot the assertion.
+
+### Changed
+- `examples/basic_decode` actually decodes now. It previously parsed the
+  CAN identifier, printed it, and told the reader to run the CLI — which made
+  the only "minimal example" in the repository a demonstration of one
+  accessor. It now builds a `Message` from the frame, runs it through the
+  default registry and prints each field's raw value next to its physical
+  quantity: `Latitude: raw=540123456 -> 54.012346`. That matches the
+  reference vector recorded in `docs/compliance.md`, so the example output is
+  itself checkable.
+
 ## [0.1.1] - 2026-11-27
 
 Toolchain and CI correctness release. **No behavioural change**: no payload

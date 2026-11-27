@@ -1,5 +1,7 @@
 # moonn2k
 
+[![CI](https://github.com/CGYH/moonn2k/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CGYH/moonn2k/actions/workflows/ci.yml)
+
 **moonn2k** is a pure-MoonBit, offline-verifiable NMEA 2000 protocol toolkit:
 extended 29-bit CAN ID / PGN parsing, single-frame and Fast Packet codecs,
 typed field codecs for 10 selected PGNs, deterministic virtual devices and a
